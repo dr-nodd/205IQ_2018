@@ -1,0 +1,91 @@
+#!/usr/bin/python3
+
+import sys
+import argparse
+from math import sqrt, pi, exp
+
+
+def check_unsigned(a):
+    value = int(a)
+    if value < 0:
+        raise argparse.ArgumentTypeError("%r must be positive"%(value,))
+    return value
+
+
+def check_value(a):
+    value = int(a)
+    if value < 0 or value > 200:
+        raise argparse.ArgumentTypeError("%r must be between 0 and 200"%(value,))
+    return value
+
+
+def check_size(k):
+    value = int(k)
+    if value < 0 or value < int(sys.argv[3]) or value > 200:
+        raise argparse.ArgumentTypeError("%r must be positive and inferior than n" % (value,))
+    return value
+
+
+if len(sys.argv) == 3:
+    parser = argparse.ArgumentParser(description='205iq')
+    parser.add_argument('x', type=check_value)
+    parser.add_argument('y', type=check_unsigned)
+elif len(sys.argv) == 4:
+    parser = argparse.ArgumentParser(description='205iq')
+    parser.add_argument('x', type=check_value)
+    parser.add_argument('y', type=check_unsigned)
+    parser.add_argument('IQ1', type=check_value)
+elif len(sys.argv) == 5:
+    parser = argparse.ArgumentParser(description='205iq')
+    parser.add_argument('x', type=check_value)
+    parser.add_argument('y', type=check_unsigned)
+    parser.add_argument('IQ1', type=check_value)
+    parser.add_argument('IQ2', type=check_size)
+
+
+try:
+    args = parser.parse_args()
+except:
+    exit(84)
+
+
+def calc_iq(x, y):
+    res_tab = []
+    i = 0
+    while i <= 200:
+        res_tab.append((1 / (float(y) * sqrt(2 * pi))) * exp(-0.5 * pow((float(i) - float(x)) / float(y), 2)))
+        i += 1
+    return res_tab
+
+
+def print_tab(tab):
+    i = 0
+    while i <= 200:
+        print("{:d} {:.5f}" .format(i, tab[i]))
+        i += 1
+
+
+def inferior_iq(x, y, iq):
+    i = 0.0
+    res = 0.0
+    while i < iq:
+        res += (1 / (float(y) * sqrt(2 * pi))) * exp(-0.5 * pow((float(i) - float(x)) / float(y), 2))
+        i += 0.01
+    print("{:.1f}% of people have an IQ inferior to {:d}" .format(res, iq))
+
+
+def between_iq(x, y, iq1, iq2):
+    i = float(iq1)
+    res = 0.0
+    while i < iq2:
+        res += (1 / (float(y) * sqrt(2 * pi))) * exp(-0.5 * pow((float(i) - float(x)) / float(y), 2))
+        i += 0.01
+    print("{:.1f}% of people have an IQ between {:d} and {:d}" .format(res, iq1, iq2))
+
+
+if len(sys.argv) == 3:
+    print_tab(calc_iq(args.x, args.y))
+if len(sys.argv) == 4:
+    inferior_iq(args.x, args.y, args.IQ1)
+if len(sys.argv) == 5:
+    between_iq(args.x, args.y, args.IQ1, args.IQ2)
